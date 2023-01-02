@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
+#include <thread>
 using std::cout;
 using std::cin;
 using std::endl;
@@ -8,6 +10,7 @@ using std::vector;
 #include "Robot.h"
 #include "Obstacle.h"
 #include "Coordinate.h"
+#include "PC.h"
 
 vector<Coordinate> read_from_file(const std::string& filename) {
 
@@ -30,6 +33,34 @@ vector<Coordinate> read_from_file(const std::string& filename) {
     }
 
     return coords_from_text;
+
+}
+
+
+//PC q(10);
+PC q(3);
+
+void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle){
+        
+        double robot_goal_x, robot_goal_y;
+        Coordinate robot_goal = q.take();
+        robot_goal_x = robot_goal.xCoord();
+        robot_goal_y = robot_goal.yCoord();
+
+        Robot rob{robot.pos_xRgoal(), robot.pos_yRgoal(), robot.pos_xRgoal(), robot.pos_yRgoal(), robot_goal_x, robot_goal_y};
+        rob.move_robot_to_goal(1000.0, 1.0, 10.0, dimofgrid, vobstacle);
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+}
+
+void producer(vector<Coordinate> sample_coords){
+
+    for (auto pos=sample_coords.cbegin(); pos!=sample_coords.cend(); ++pos)
+    {
+        q.append(*pos); 
+        cout << "Cooordinate x e y prodotte: " << (*pos).xCoord() << endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+       
 
 }
 
@@ -111,17 +142,38 @@ int main()
     //robot_1.move_robot_to_goal(10000.0, 1.0, 10.0, dimG, vobs);
 
 
-
-    //Salvo le coordinate inviate dai due sataletti all'interno di 2 vettori di coordinate
     vector<Coordinate> goals_coords_from_sat1, goals_coords_from_sat2;
-    std::string filename{"sample_coordinates.txt"};
-    goals_coords_from_sat1 = read_from_file(filename);
+    
+    //Salvo le coordinate inviate dal primo dei due satelliti all'interno di un vettore di coordinate
+    std::string filename1{"sample_coordinates_sat1.txt"};
+    goals_coords_from_sat1 = read_from_file(filename1);
 
     for (auto pos = goals_coords_from_sat1.cbegin(); pos !=goals_coords_from_sat1.cend(); ++pos){
 
         cout << '(' << (*pos).xCoord() << ',' << (*pos).yCoord() << ')' << endl;
 
     }
+
+    
+    //Salvo le coordinate inviate dal secondo dei due satelliti all'interno di un vettore di coordinate
+    std::string filename2{"sample_coordinates_sat2.txt"};
+    goals_coords_from_sat2 = read_from_file(filename2);
+
+    for (auto pos = goals_coords_from_sat1.cbegin(); pos !=goals_coords_from_sat1.cend(); ++pos){
+
+        cout << '(' << (*pos).xCoord() << ',' << (*pos).yCoord() << ')' << endl;
+
+    }
+
+
+
+    std::thread c1(consumer, robot_1, dimG, vobs);
+    std::thread p1(producer, goals_coords_from_sat1);
+    std::thread p2(producer, goals_coords_from_sat2);
+
+    c1.join();
+    p1.join();
+    p2.join();
 
     return 0;
     
