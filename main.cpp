@@ -48,10 +48,15 @@ void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle, int num
     for (int i = 0; i < num_samples; ++i)
     {
         Coordinate robot_goal = q.take();
-        robot_goal_x = robot_goal.xCoord();
+
+        /*robot_goal_x = robot_goal.xCoord();
         robot_goal_y = robot_goal.yCoord();
-        Robot rob{robot.pos_xRgoal(), robot.pos_yRgoal(), robot.pos_xRgoal(), robot.pos_yRgoal(), robot_goal_x, robot_goal_y};
-        rob.move_robot_to_goal(1000.0, 1.0, 10.0, dimofgrid, vobstacle);
+        Robot rob{robot.pos_xRgoal(), robot.pos_yRgoal(), robot.pos_xRgoal(), robot.pos_yRgoal(), robot_goal_x, robot_goal_y};*/
+
+
+        //Impiego una fz che mi aggiorna il robot alle coordinate goal fornite dai satelliti, imponendo quelle del goal precedente come attuali  
+        robot.update_robot_to_new_sample_goalcoords(robot_goal);    
+        robot.move_robot_to_goal(1000.0, 1.0, 10.0, dimofgrid, vobstacle);
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
     

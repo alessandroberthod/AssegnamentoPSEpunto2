@@ -196,12 +196,6 @@ double Coordinate::min_distance_currentrobotcoord_one_obstacle_coords(double dim
 	double min_dist_currrobcell_obstcells;
 	vec_outline_obstacle_cells = obst.outline_obstacle_coordinates(dimGrid);
 
-	/*for (auto pos = vec_outline_obstacle_cells.cbegin(); pos != vec_outline_obstacle_cells.cend(); ++pos)
-	{
-		cout << (*pos).xCell() << "," << (*pos).yCell() << " ";
-	}*/
-
-	//cout << endl;
 
 	for (auto pos = vec_outline_obstacle_cells.cbegin(); pos != vec_outline_obstacle_cells.cend(); ++pos)
 	{
@@ -229,7 +223,7 @@ double Coordinate::min_distance_currentrobotcoord_all_obstacles_coords(double di
 	}
 
 	min_dist_currrobcell_all_obstcells = *min_element(vec_min_dist_currentrobcell_generic_obst.cbegin(), vec_min_dist_currentrobcell_generic_obst.cend());
-	//cout << "La minima distanza dall'ostacolo risulta: " << min_dist_actrobcell_all_obstcells << endl;
+
 	return min_dist_currrobcell_all_obstcells;
 
 }
@@ -246,7 +240,6 @@ double Coordinate::potential_tot_btw_currentgoalrobcoords_currentrobobstcoords(d
 	double min_dist_currrobcell_allobstacle;
 
 	potential_rg = 1.0/2*(_zeta)*pow(distance_currentrobotcoord_goalrobotcoord(cgoal), 2);
-	//cout << "Il potenziale attrattivo risulta: " << potential_rg << endl;
 
 	min_dist_currrobcell_allobstacle = min_distance_currentrobotcoord_all_obstacles_coords(dimGrid, vecobst_pot);
 	if (min_dist_currrobcell_allobstacle <= _max_dist_infl)
@@ -258,12 +251,8 @@ double Coordinate::potential_tot_btw_currentgoalrobcoords_currentrobobstcoords(d
 		potential_ro = 0;
 
 	}
-	//cout << "Il potenziale repulsivo risulta: " << potential_ro << endl;
 
 	potential_tot = potential_rg + potential_ro;
-
-	//cout << "Il potenziale totale risulta: " << potential_tot << endl;
-
 	return potential_tot;
 
 }
@@ -288,7 +277,7 @@ Coordinate Coordinate::path_planning_robot(double _eta, double _zeta, double _ma
     //Calcolo del potenziale totale delle possibili celle che il robot può andare ad occupare al movimento successivo
 	for (auto pos = possible_robot_next_step_coords.cbegin(); pos != possible_robot_next_step_coords.cend(); ++pos)  
 		{
-			//cout << '(' << (*pos).xCoord() << ',' << (*pos).yCoord() << ')' << endl;
+
 			potential_possible_robot_next_step_coords.push_back((*pos).potential_tot_btw_currentgoalrobcoords_currentrobobstcoords(_eta, _zeta, _max_dist_infl, dimGrid, cgoal, vecobst_pp));
 
 		}
@@ -328,7 +317,10 @@ void Robot::move_robot_to_goal(double _eta, double _zeta, double _max_dist_infl,
 	double diffx_currrobcellcoords_currrobcoords, diffy_currrobcellcoords_currrobcoords;
 	diffx_currrobcellcoords_currrobcoords = current_robot_coordinates.xCoord() - currrobcell_coords.xCoord();
 	diffy_currrobcellcoords_currrobcoords = current_robot_coordinates.yCoord() - currrobcell_coords.yCoord();
-	cout << diffx_currrobcellcoords_currrobcoords << diffy_currrobcellcoords_currrobcoords << endl;
+	//cout << diffx_currrobcellcoords_currrobcoords << diffy_currrobcellcoords_currrobcoords << endl;
+
+	cout << "Coordinate del Robot iniziali in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
+	<< '(' << xRcurrent << ',' << yRcurrent << ')' << '(' << xRgoal << ',' << yRgoal << ')' << endl;
 
 
 	/*Confronto fra le due posizioni del Robot è possibile solamente definendo +1 operator overloading per i simboli !=
@@ -377,9 +369,19 @@ void Robot::move_robot_to_goal(double _eta, double _zeta, double _max_dist_infl,
 
 	}
 
-cout << "Coordinate del Robot in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
+cout << "Coordinate del Robot finali in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
 << '(' << xRcurrent << ',' << yRcurrent << ')' << '(' << xRgoal << ',' << yRgoal << ')' << endl;
 
+
+}
+
+
+void Robot::update_robot_to_new_sample_goalcoords(const Coordinate& coordsgoal)
+{
+	xRcurrent = xRgoal;
+	yRcurrent = yRgoal;
+	xRgoal = coordsgoal.xCoord();
+	yRgoal = coordsgoal.yCoord();
 
 }
 

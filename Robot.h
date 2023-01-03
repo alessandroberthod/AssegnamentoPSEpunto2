@@ -25,6 +25,7 @@ public:
     Coordinate curr_rob_lower_left_corner_cell_coord(double dimGrid);
     Coordinate goal_rob_lower_left_corner_cell_coord(double dimGrid);
     void move_robot_to_goal(double _eta, double _zeta, double _max_dist_infl, double dimGrid, const vector<Obstacle>& vecobst_pp);
+    void update_robot_to_new_sample_goalcoords(const Coordinate& coordsgoal);
 
 private:
     double xRinitial, yRinitial, xRcurrent, yRcurrent, xRgoal, yRgoal;
