@@ -366,10 +366,10 @@ void Robot::move_robot_to_goal(double _eta, double _zeta, double _max_dist_infl,
 		
 		
 		//Print del moto del robot all'interno dello spazio verso la pos. goal
-		cout << "Coordinate del Robot in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
-		<< '(' << xRcurrent << ',' << yRcurrent << ')' << '(' << xRgoal << ',' << yRgoal << ')' << endl;
-		cout << "Coordinate del Robot cella attuale: " << currrobcell_coord_x << ',' << currrobcell_coord_y << endl;
-		cout << "Coordinate del Robot cella goal: " << goalrobcell_coord_x << ',' << goalrobcell_coord_y << endl;
+		//cout << "Coordinate del Robot in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
+		//<< '(' << xRcurrent << ',' << yRcurrent << ')' << '(' << xRgoal << ',' << yRgoal << ')' << endl;
+		//cout << "Coordinate del Robot cella attuale: " << currrobcell_coord_x << ',' << currrobcell_coord_y << endl;
+		//cout << "Coordinate del Robot cella goal: " << goalrobcell_coord_x << ',' << goalrobcell_coord_y << endl;
 
 		// DA PROBLEMI con dimG=0.2 xRcurrent=0.3 yRcurrent=0.5 xRgoal=60 yRgoal=60
 		// DA PROBLEMI con dimG=0.3 xRcurrent=0.5 yRcurrent=0.8 xRgoal=60 yRgoal=60
@@ -377,7 +377,8 @@ void Robot::move_robot_to_goal(double _eta, double _zeta, double _max_dist_infl,
 
 	}
 
-
+cout << "Coordinate del Robot in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
+<< '(' << xRcurrent << ',' << yRcurrent << ')' << '(' << xRgoal << ',' << yRgoal << ')' << endl;
 
 
 }

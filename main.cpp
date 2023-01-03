@@ -7,6 +7,7 @@ using std::cout;
 using std::cin;
 using std::endl;
 using std::vector;
+using std::string;
 #include "Robot.h"
 #include "Obstacle.h"
 #include "Coordinate.h"
@@ -40,24 +41,29 @@ vector<Coordinate> read_from_file(const std::string& filename) {
 //PC q(10);
 PC q(3);
 
-void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle){
+void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle, int num_samples)
+{
         
-        double robot_goal_x, robot_goal_y;
+    double robot_goal_x, robot_goal_y;
+    for (int i = 0; i < num_samples; ++i)
+    {
         Coordinate robot_goal = q.take();
         robot_goal_x = robot_goal.xCoord();
         robot_goal_y = robot_goal.yCoord();
-
         Robot rob{robot.pos_xRgoal(), robot.pos_yRgoal(), robot.pos_xRgoal(), robot.pos_yRgoal(), robot_goal_x, robot_goal_y};
         rob.move_robot_to_goal(1000.0, 1.0, 10.0, dimofgrid, vobstacle);
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    }
+    
+
 }
 
-void producer(vector<Coordinate> sample_coords){
+void producer(string sat, vector<Coordinate> sample_coords){
 
     for (auto pos=sample_coords.cbegin(); pos!=sample_coords.cend(); ++pos)
     {
         q.append(*pos); 
-        cout << "Cooordinate x e y prodotte: " << (*pos).xCoord() << endl;
+        //cout << "Cooordinate x e y prodotte: " << (*pos).xCoord() << ',' << (*pos).yCoord() << "dal satellite " << sat << endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
        
@@ -77,7 +83,7 @@ int main()
     cin>>xRini;
     cout<<"Fornire la posizione y iniziale del Robot: ";
     cin>>yRini;
-   cout<<"Fornire la posizione x goal del Robot: ";
+    cout<<"Fornire la posizione x goal del Robot: ";
     cin>>xRgoal;
     cout<<"Fornire la posizione y goal del Robot: ";
     cin>>yRgoal;
@@ -114,31 +120,6 @@ int main()
     }
 
 
-    
-    //Cell prova4{18,32};
-    //Cell goalprova4{25,30};
-    /*double distanzaprova4 = prova4.distance_btw_cell(goalprova4);
-    cout << distanzaprova4 << endl;
-    double distanzaprova4_2 = prova4.min_distance_actualrobotcell_one_obstacle_cells(dimG, ostacolo1);
-    cout << distanzaprova4_2 << endl;*/
-    //double potenzialeprova4 = prova4.potential_tot_btw_actgoalrobcells_actrobobstcells(100.0, 3.0, 10.0, dimG, goalprova4, vobs);
-    //cout << potenzialeprova4;
-    //Robot robotprova4{0.2,0.2,0.2,0.2,30.5,30.8};
-    //robotprova4.move_robot_to_goal(1000.0, 3.0, 10.0, dimG, vobs);
-
-    
-    //robot_1.move_robot_to_goal(100.0, 1.0, 10.0, dimG, vobs); //ok per 30 e 30
-    /*vector<Cell> cellediconfineostacolo2;
-    cellediconfineostacolo2 = ostacolo2.outline_obstacle_cells(dimG);
-    for (auto pos = cellediconfineostacolo2.cbegin(); pos !=cellediconfineostacolo2.cend(); ++pos){
-
-        cout << '(' << (*pos).xCell() << ',' << (*pos).yCell() << ')' << endl;
-
-    }*/
-
-    //Cell provapostvisione{141, 125};
-    //double distanzaobstprovapostvisione;
-    //distanzaobstprovapostvisione = provapostvisione.min_distance_actualrobotcell_all_obstacles_cells(dimG, vobs);
     //robot_1.move_robot_to_goal(10000.0, 1.0, 10.0, dimG, vobs);
 
 
@@ -154,7 +135,6 @@ int main()
 
     }
 
-    
     //Salvo le coordinate inviate dal secondo dei due satelliti all'interno di un vettore di coordinate
     std::string filename2{"sample_coordinates_sat2.txt"};
     goals_coords_from_sat2 = read_from_file(filename2);
@@ -164,12 +144,22 @@ int main()
         cout << '(' << (*pos).xCoord() << ',' << (*pos).yCoord() << ')' << endl;
 
     }
+    //Definisco il numero dei campioni, che il robot dovrà processare
+    int size_of_samples_vec;
+    size_of_samples_vec = static_cast<int>((goals_coords_from_sat1).size());
+    size_of_samples_vec = size_of_samples_vec + static_cast<int>((goals_coords_from_sat2).size());
+    cout << "Il numero dei dati forniti dai due satelitti e': " << size_of_samples_vec << endl;
+
+    //Definisco id dei dei 2 satelliti
+    string sat1;
+    string sat2;
 
 
 
-    std::thread c1(consumer, robot_1, dimG, vobs);
-    std::thread p1(producer, goals_coords_from_sat1);
-    std::thread p2(producer, goals_coords_from_sat2);
+
+    std::thread c1(consumer, robot_1, dimG, vobs, size_of_samples_vec);
+    std::thread p1(producer, sat1, goals_coords_from_sat1);
+    std::thread p2(producer, sat2, goals_coords_from_sat2);
 
     c1.join();
     p1.join();
