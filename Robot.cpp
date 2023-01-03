@@ -25,7 +25,7 @@ Robot::Robot(double xRinit, double yRinit, double xRcurr, double yRcurr, double 
 //Costruttore default Robot
 const Robot& default_robot()
 {
-	static Robot rr{0,0,0,0,100,100};
+	static Robot rr{0,0,0,0,0,0};
 	return rr;
 }
 
