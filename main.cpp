@@ -43,11 +43,10 @@ PC q(3);
 
 void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle, int num_samples)
 {
-        
-    double robot_goal_x, robot_goal_y;
+
     for (int i = 0; i < num_samples; ++i)
     {
-        Coordinate robot_goal = q.take();
+        Coordinate robot_goal_coords = q.take();
 
         /*robot_goal_x = robot_goal.xCoord();
         robot_goal_y = robot_goal.yCoord();
@@ -55,7 +54,7 @@ void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle, int num
 
 
         //Impiego una fz che mi aggiorna il robot alle coordinate goal fornite dai satelliti, imponendo quelle del goal precedente come attuali  
-        robot.update_robot_to_new_sample_goalcoords(robot_goal);    
+        robot.update_robot_to_new_sample_goalcoords(robot_goal_coords);    
         robot.move_robot_to_goal(1000.0, 1.0, 10.0, dimofgrid, vobstacle);
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
@@ -63,12 +62,13 @@ void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle, int num
 
 }
 
-void producer(string sat, vector<Coordinate> sample_coords){
+void producer(string sat, vector<Coordinate> sample_coords)
+{
 
     for (auto pos=sample_coords.cbegin(); pos!=sample_coords.cend(); ++pos)
     {
         q.append(*pos); 
-        //cout << "Cooordinate x e y prodotte: " << (*pos).xCoord() << ',' << (*pos).yCoord() << "dal satellite " << sat << endl;
+        cout << "Cooordinate x e y prodotte sono: " << (*pos).xCoord() << ',' << (*pos).yCoord() << "dal satellite: " << sat << endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
        
@@ -155,16 +155,10 @@ int main()
     size_of_samples_vec = size_of_samples_vec + static_cast<int>((goals_coords_from_sat2).size());
     cout << "Il numero dei dati forniti dai due satelitti e': " << size_of_samples_vec << endl;
 
-    //Definisco id dei dei 2 satelliti
-    string sat1;
-    string sat2;
-
-
-
 
     std::thread c1(consumer, robot_1, dimG, vobs, size_of_samples_vec);
-    std::thread p1(producer, sat1, goals_coords_from_sat1);
-    std::thread p2(producer, sat2, goals_coords_from_sat2);
+    std::thread p1(producer, "sat1", goals_coords_from_sat1);
+    std::thread p2(producer, "sat2", goals_coords_from_sat2);
 
     c1.join();
     p1.join();
