@@ -46,6 +46,7 @@ void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle, int num
 
     for (int i = 0; i < num_samples; ++i)
     {
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         Coordinate robot_goal_coords = q.take();
 
         /*robot_goal_x = robot_goal.xCoord();
@@ -57,6 +58,7 @@ void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle, int num
         robot.update_robot_to_new_sample_goalcoords(robot_goal_coords);    
         robot.move_robot_to_goal(1000.0, 1.0, 10.0, dimofgrid, vobstacle);
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
+       
     }
     
 
@@ -68,7 +70,7 @@ void producer(string sat, vector<Coordinate> sample_coords)
     for (auto pos=sample_coords.cbegin(); pos!=sample_coords.cend(); ++pos)
     {
         q.append(*pos); 
-        cout << "Cooordinate x e y prodotte sono: " << (*pos).xCoord() << ',' << (*pos).yCoord() << "dal satellite: " << sat << endl;
+        cout << "Cooordinate x e y prodotte sono: " << (*pos).xCoord() << ',' << (*pos).yCoord() << " dal satellite: " << sat << endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
        
