@@ -382,8 +382,8 @@ void Robot::move_robot_to_goal(double _eta, double _zeta, double _max_dist_infl,
 	
 		
 		//Print del moto del robot all'interno dello spazio verso la pos. goal
-		cout << "Coordinate del Robot in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
-		<< '(' << xRcurrent << ',' << yRcurrent << ')' << '(' << xRgoal << ',' << yRgoal << ')' << endl;
+		//cout << "Coordinate del Robot in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
+		//<< '(' << xRcurrent << ',' << yRcurrent << ')' << '(' << xRgoal << ',' << yRgoal << ')' << endl;
 
 
 	}
@@ -443,6 +443,8 @@ void Robot::update_robot_to_new_sample_goalcoords(const Coordinate& coordsgoal)
 {
 	xRcurrent = xRgoal;
 	yRcurrent = yRgoal;
+	xRinitial = xRgoal;
+	yRinitial = yRgoal;
 	xRgoal = coordsgoal.xCoord();
 	yRgoal = coordsgoal.yCoord();
 
