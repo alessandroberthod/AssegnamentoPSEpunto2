@@ -56,7 +56,7 @@ void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle, int num
 
         //Impiego una fz che mi aggiorna il robot alle coordinate goal fornite dai satelliti, imponendo quelle del goal precedente come attuali  
         robot.update_robot_to_new_sample_goalcoords(robot_goal_coords);    
-        robot.move_robot_to_goal(1000.0, 1.0, 10.0, dimofgrid, vobstacle);
+        robot.move_robot_to_goal(300.0, 1.0, 5.0, dimofgrid, vobstacle);
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
        
     }

@@ -24,6 +24,7 @@ public:
     double min_distance_currentrobotcoord_all_obstacles_coords(double dimGrid, const vector<Obstacle>& vecobst) const;
     double potential_tot_btw_currentgoalrobcoords_currentrobobstcoords(double _eta, double _zeta, double _max_dist_infl, double dimGrid, const Coordinate& cgoal, const vector<Obstacle>& vecobst_pot) const;
     Coordinate path_planning_robot(double _eta, double _zeta, double _max_dist_infl, double dimGrid, const Coordinate& cgoal, const vector<Obstacle>& vecobst_pp) const;
+    Coordinate coords_cell_of_particular_position(double dimGrid) const;
 
 private:
     double xC, yC;
@@ -31,5 +32,7 @@ private:
 
 };
 
+
+Coordinate operator - (const Coordinate& c1, const Coordinate & c2);
 
 #endif

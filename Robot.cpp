@@ -109,15 +109,76 @@ Coordinate Robot::goal_rob_lower_left_corner_cell_coord(double dimGrid)
 
 }
 
+Coordinate Coordinate::coords_cell_of_particular_position(double dimGrid) const 
+{
+	double coord_x_cell_of_pos, coord_y_cell_of_pos;
+
+	if (xC > 0)
+	{
+		coord_x_cell_of_pos = ((static_cast<int>(xC/dimGrid))*dimGrid);
+	}
+	else 
+	{
+		coord_x_cell_of_pos = ((static_cast<int>(xC/dimGrid))*dimGrid) - dimGrid;
+	}
+
+	if (yC > 0)
+	{
+		coord_y_cell_of_pos = ((static_cast<int>(yC/dimGrid))*dimGrid);
+	}
+	else
+	{
+		coord_y_cell_of_pos = ((static_cast<int>(yC/dimGrid))*dimGrid) - dimGrid;
+	}
+
+	Coordinate cell_coordinates_of_position{coord_x_cell_of_pos, coord_y_cell_of_pos};
+
+	return cell_coordinates_of_position;
+
+}
+
+
+
 //Funzione: adegua le proprietà dell'ostacolo alla dimensione della griglia
 void Obstacle::adapt_obstacle_to_grid(double dimGrid) 
 {
+	
+	if (x1 > 0)
+	{
+		x1 = static_cast<int>((x1/dimGrid))*dimGrid;
+	}
+	else 
+	{
+		x1 = static_cast<int>((x1/dimGrid))*dimGrid - dimGrid;
+	}
 
-	x1 = static_cast<int>((x1/dimGrid))*dimGrid;
-	y1 = static_cast<int>((y1/dimGrid))*dimGrid;
-	x2 = (static_cast<int>((x2/dimGrid))*dimGrid) + dimGrid; //Aggiunta di dimGrid perchè altrimenti avrei ad esempio 25.2 -> 25 mentre 25.2->26, ricordando che cella occupata parzialmente = cella occupata interamente
-	y2 = (static_cast<int>((y2/dimGrid))*dimGrid) + dimGrid;
+	if (y1 > 0)
+	{
+		y1 = static_cast<int>((y1/dimGrid))*dimGrid;
+	}
+	else 
+	{
+		y1 = static_cast<int>((y1/dimGrid))*dimGrid - dimGrid;
+	}
 
+	if (x2 > 0)
+	{
+		x2 = (static_cast<int>((x2/dimGrid))*dimGrid) + dimGrid;//Aggiunta di dimGrid perchè altrimenti avrei ad esempio 25.2 -> 25 mentre 25.2->26, ricordando che cella occupata parzialmente = cella occupata interamente
+	}
+	else
+	{
+		x2 = (static_cast<int>((x2/dimGrid))*dimGrid);
+	}
+
+	if (y2 > 0)
+	{
+		y2 = (static_cast<int>((y2/dimGrid))*dimGrid) + dimGrid;
+	}
+	else 
+	{
+		y2 = (static_cast<int>((y2/dimGrid))*dimGrid);
+	}
+	
 }
 
 
@@ -128,25 +189,25 @@ vector<Coordinate> Obstacle::outline_obstacle_coordinates(double dimGrid) const
 
 
 	//Coordinate delle celle di contorno dell'ostacolo aventi stessa x = x1 e y compresa fra y1 e y2
-	for (int i = 0; i <= (y2-y1); ++i)
+	for (int i = 0; i <= (y2-y1)/dimGrid; ++i)
 	{
 		outline_obstacle_c.push_back(Coordinate{x1, (y1 + i*dimGrid)});
 	}
 
 	//Coordinate delle celle del contorno dell'ostacolo aventi stessa y = y2 e x compresa fra x2 e x1
-	for (int i = 1; i < (x2-x1); ++i)
+	for (int i = 1; i < (x2-x1)/dimGrid; ++i)
 	{
 		outline_obstacle_c.push_back(Coordinate{(x1 + i*dimGrid), y2});
 	}
 
 	//Coordinate del contorno dell'ostacolo avaneti stessa x = x2 e y compresa fra y1 e y2
-	for (int i = 0; i <= (y2-y1); ++i)
+	for (int i = 0; i <= (y2-y1)/dimGrid; ++i)
 	{
 		outline_obstacle_c.push_back(Coordinate{x2, (y1 + i*dimGrid)});
 	}
 
 	//Coordinate del contorno dell'ostacolo aventi stessa y = y1 e x compresa fra x1 e x2
-	for (int i = 1; i < (x2-x1); ++i)
+	for (int i = 1; i < (x2-x1)/dimGrid; ++i)
 	{
 		outline_obstacle_c.push_back(Coordinate{(x1 + i*dimGrid), y1});
 	}
@@ -154,6 +215,7 @@ vector<Coordinate> Obstacle::outline_obstacle_coordinates(double dimGrid) const
 	return outline_obstacle_c;
 
 }
+
 
 
 
@@ -287,6 +349,7 @@ Coordinate Coordinate::path_planning_robot(double _eta, double _zeta, double _ma
     int idx_ = std::distance(potential_possible_robot_next_step_coords.begin(), idx_min_potential_robot_next_step_coords);
     Coordinate robot_next_step_coords;
     robot_next_step_coords = possible_robot_next_step_coords[idx_];
+
 	return robot_next_step_coords;
 
 }
@@ -294,30 +357,9 @@ Coordinate Coordinate::path_planning_robot(double _eta, double _zeta, double _ma
 
 void Robot::move_robot_to_goal(double _eta, double _zeta, double _max_dist_infl, double dimGrid, const vector<Obstacle>& vecobst_pp) 
 {
-	//Definisco le celle della posizione attuale/iniziale del robot e della posizione goal del robot 
-	Coordinate currrobcell_coords, goalrobcell_coords;
-	currrobcell_coords = curr_rob_lower_left_corner_cell_coord(dimGrid); //Coordinate dell'angolo in basso a sinistra della cella associata alla posizione attuale del robot
-	double currrobcell_coord_x{currrobcell_coords.xCoord()};
-	double currrobcell_coord_y{currrobcell_coords.yCoord()};
-	goalrobcell_coords = goal_rob_lower_left_corner_cell_coord(dimGrid); //Coordinate dell'angolo in basso a sinistra della cella associata alla posizione goal del robot
-	double goalrobcell_coord_x{goalrobcell_coords.xCoord()};
-	double goalrobcell_coord_y{goalrobcell_coords.yCoord()};
-	
-	
-	/*double currrobcellx, currrobcelly, diff_currrobcellx_xRcurrent, diff_currrobcelly_yRcurrent;
-	currrobcellx = currrobcell.xCell();
-	currrobcelly = currrobcell.yCell();
-	diff_currrobcellx_xRcurrent = xRcurrent - currrobcellx;
-	diff_currrobcelly_yRcurrent = yRcurrent - currrobcelly;*/
-
-
 	Coordinate current_robot_coordinates{xRcurrent, yRcurrent};
-	Coordinate goal_robot_coordinate{xRgoal, yRgoal};
+	Coordinate goal_robot_coordinates{xRgoal, yRgoal};
 
-	double diffx_currrobcellcoords_currrobcoords, diffy_currrobcellcoords_currrobcoords;
-	diffx_currrobcellcoords_currrobcoords = current_robot_coordinates.xCoord() - currrobcell_coords.xCoord();
-	diffy_currrobcellcoords_currrobcoords = current_robot_coordinates.yCoord() - currrobcell_coords.yCoord();
-	//cout << diffx_currrobcellcoords_currrobcoords << diffy_currrobcellcoords_currrobcoords << endl;
 
 	cout << "Coordinate del Robot iniziali in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
 	<< '(' << xRcurrent << ',' << yRcurrent << ')' << '(' << xRgoal << ',' << yRgoal << ')' << endl;
@@ -327,54 +369,72 @@ void Robot::move_robot_to_goal(double _eta, double _zeta, double _max_dist_infl,
 	non serve perchè si confontano 2 double e non 2 oggetti della classe Cell, occhio al confronto perchè all'inizio true && true = true mentre poi false && true = false quando una
 	delle due eguaglia il valore della posizione Goal l'algoritmo si ferma!
 	*/
-	while ( !((abs(goalrobcell_coord_x - currrobcell_coord_x) < 1e-9) && (abs(goalrobcell_coord_y - currrobcell_coord_y) < 1e-9))) //prima avevo currrobcellx e currrobcelly che non venivano aggiornati ad ogni ciclo!
-	//while ( !(((goalrobcell.xCell() == currrobcell.xCell())) && ((goalrobcell.yCell() == currrobcell.yCell()))))
+	while ( !((std::abs(goal_robot_coordinates.xCoord() - current_robot_coordinates.xCoord()) <= (dimGrid/2 - 1e-9)) && (std::abs(goal_robot_coordinates.yCoord() - current_robot_coordinates.yCoord()) <= (dimGrid/2 - 1e-9))))
 	{
 		Coordinate robot_next_step_move;
-		robot_next_step_move = current_robot_coordinates.path_planning_robot(_eta, _zeta, _max_dist_infl, dimGrid, goal_robot_coordinate, vecobst_pp);
+		robot_next_step_move = current_robot_coordinates.path_planning_robot(_eta, _zeta, _max_dist_infl, dimGrid, goal_robot_coordinates, vecobst_pp);
 		current_robot_coordinates = robot_next_step_move;
-		currrobcell_coord_x = current_robot_coordinates.xCoord() - diffx_currrobcellcoords_currrobcoords;
-		currrobcell_coord_y = current_robot_coordinates.yCoord() - diffy_currrobcellcoords_currrobcoords;
-		
-		//xRcurrent = currrobcell_coords.xCoord() + diffx_currrobcellcoords_currrobcoords;
-		//yRcurrent = currrobcell_coords.yCoord() + diffy_currrobcellcoords_currrobcoords;
-		
-		//Celle della pos.attuale e pos.goal stampate per verifica
-		//cout << "Coordinata dell'angolo inferiore della cella attuale Robot: " << '(' << currrobcell.xCell() << ',' << currrobcell.yCell() << ')' << endl;
-		//cout << "Coordinata dell'angolo inferiore della cella goal Robot: " << '(' << goalrobcell.xCell() << ',' << goalrobcell.yCell() << ')' << endl;
-
-		/*if perchè in alcuni casi può essere che il robot sia posizionato in alto nella cella quindi sia +vicino nella cella precedente rispetto alla 
-		cella successiva in cui è posizionato il goal se questo è + vicino invece all'angolo in basso*/
-		if ((abs(goalrobcell_coord_x - currrobcell_coord_x) < 1e-9) && (abs(goalrobcell_coord_y - currrobcell_coord_y) < 1e-9))
-		{
-			xRcurrent = xRgoal;
-			yRcurrent = yRgoal;
-		}
-		else
-		{
-			xRcurrent = current_robot_coordinates.xCoord();
-			yRcurrent = current_robot_coordinates.yCoord();
-		}
-		
+		xRcurrent = current_robot_coordinates.xCoord();
+		yRcurrent = current_robot_coordinates.yCoord();
+	
 		
 		//Print del moto del robot all'interno dello spazio verso la pos. goal
-		//cout << "Coordinate del Robot in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
-		//<< '(' << xRcurrent << ',' << yRcurrent << ')' << '(' << xRgoal << ',' << yRgoal << ')' << endl;
-		//cout << "Coordinate del Robot cella attuale: " << currrobcell_coord_x << ',' << currrobcell_coord_y << endl;
-		//cout << "Coordinate del Robot cella goal: " << goalrobcell_coord_x << ',' << goalrobcell_coord_y << endl;
-
-		// DA PROBLEMI con dimG=0.2 xRcurrent=0.3 yRcurrent=0.5 xRgoal=60 yRgoal=60
-		// DA PROBLEMI con dimG=0.3 xRcurrent=0.5 yRcurrent=0.8 xRgoal=60 yRgoal=60
+		cout << "Coordinate del Robot in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
+		<< '(' << xRcurrent << ',' << yRcurrent << ')' << '(' << xRgoal << ',' << yRgoal << ')' << endl;
 
 
 	}
 
-cout << "Coordinate del Robot finali in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
-<< '(' << xRcurrent << ',' << yRcurrent << ')' << '(' << xRgoal << ',' << yRgoal << ')' << endl;
+	adapt_final_currrobcoords_to_goalcoords(dimGrid, current_robot_coordinates, goal_robot_coordinates);
+
+	cout << "Coordinate del Robot in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
+	<< '(' << xRcurrent << ',' << yRcurrent << ')' << '(' << xRgoal << ',' << yRgoal << ')' << endl;
 
 
 }
+void Robot::adapt_final_currrobcoords_to_goalcoords(double dimGrid, const Coordinate& finalcurrcoords, const Coordinate& goalcoords)
+{
+	
+	Coordinate finalcurrcoords_cell, goalcoords_cell, diff_coords_goal, diff_coords_current;
+	finalcurrcoords_cell = finalcurrcoords.coords_cell_of_particular_position(dimGrid);
+	goalcoords_cell = goalcoords.coords_cell_of_particular_position(dimGrid);
 
+
+	diff_coords_current = finalcurrcoords - finalcurrcoords_cell;
+	diff_coords_goal = goalcoords - goalcoords_cell;
+
+	//Operazioni considerando le coordinate in x:
+	if (finalcurrcoords_cell.xCoord() < goalcoords_cell.xCoord())
+	{ 
+		xRcurrent = xRcurrent + dimGrid - diff_coords_current.xCoord() + diff_coords_goal.xCoord();
+	}
+	else if (goalcoords_cell.xCoord() < finalcurrcoords_cell.xCoord())
+	{
+		xRcurrent = xRcurrent - dimGrid + diff_coords_goal.xCoord() - diff_coords_current.xCoord();
+	}
+	else
+	{
+		xRcurrent = xRcurrent + diff_coords_goal.xCoord() - diff_coords_current.xCoord();
+	}
+
+
+
+	//Operazioni considerando le coordinate in y:
+	if (finalcurrcoords_cell.yCoord() < goalcoords_cell.yCoord())
+	{ 
+		yRcurrent = yRcurrent + dimGrid - diff_coords_current.yCoord() + diff_coords_goal.yCoord();
+	}
+	else if (goalcoords_cell.yCoord() < finalcurrcoords_cell.yCoord())
+	{
+		yRcurrent = yRcurrent - dimGrid + diff_coords_goal.yCoord() - diff_coords_current.yCoord();
+	}
+	else
+	{
+		yRcurrent = yRcurrent + diff_coords_goal.yCoord() - diff_coords_current.yCoord();
+	}
+
+
+}
 
 void Robot::update_robot_to_new_sample_goalcoords(const Coordinate& coordsgoal)
 {
@@ -401,4 +461,18 @@ ostream& operator<<(ostream& os, const Obstacle& obs_os)
 	return os << '(' << obs_os.x1o()
 		<< ',' << obs_os.y1o() << ',' << obs_os.x2o()
 		<< ',' << obs_os.y2o() << ')';
+}
+
+
+//operators overloading, che consente di effettuare la differenza fra due coordinate 
+Coordinate operator - (const Coordinate& c1, const Coordinate& c2)
+{
+
+	double diff_in_x_coord, diff_in_y_coord;
+	diff_in_x_coord = c1.xCoord() - c2.xCoord();
+	diff_in_y_coord = c1.yCoord() - c2.yCoord();
+	Coordinate coords_diff{diff_in_x_coord, diff_in_y_coord};
+
+	return coords_diff;
+
 }
