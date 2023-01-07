@@ -20,6 +20,9 @@ using std::string;
 //PC q(10);
 PC q(3);
 
+//mutex di protezione flusso output => cout
+mutex cout_mutex;
+
 void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle, int num_samples)
 {
 
@@ -30,8 +33,10 @@ void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle, int num
 
         //Impiego una fz che mi aggiorna il robot alle coordinate goal fornite dai satelliti, imponendo quelle del goal precedente come attuali  
         robot.update_robot_to_new_sample_goalcoords(robot_goal_coords);    
+        //cout_mutex.lock();
         robot.move_robot_to_goal(300.0, 1.0, 5.0, dimofgrid, vobstacle);
-        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        //cout_mutex.unlock();
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
        
     }
     
@@ -44,8 +49,10 @@ void producer(string sat, vector<Coordinate> sample_coords)
     for (auto pos=sample_coords.cbegin(); pos!=sample_coords.cend(); ++pos)
     {
         q.append(*pos); 
+        //cout_mutex.lock();
         cout << "Cooordinate x e y prodotte sono: " << (*pos).xCoord() << ',' << (*pos).yCoord() << " dal satellite: " << sat << endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        //cout_mutex.unlock();
+        //std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
        
 
@@ -155,7 +162,6 @@ int main()
     int size_of_samples_vec;
     size_of_samples_vec = static_cast<int>((goals_coords_from_sat1).size());
     size_of_samples_vec = size_of_samples_vec + static_cast<int>((goals_coords_from_sat2).size());
-    cout << "Il numero dei dati forniti dai due satelitti e': " << size_of_samples_vec << endl;
 
 
     thread c1(consumer, robot_1, dimG, vobs, size_of_samples_vec);

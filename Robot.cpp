@@ -372,7 +372,7 @@ void Robot::move_robot_to_goal(double _eta, double _zeta, double _max_dist_infl,
 	non serve perchè si confontano 2 double e non 2 oggetti della classe Cell, occhio al confronto perchè all'inizio true && true = true mentre poi false && true = false quando una
 	delle due eguaglia il valore della posizione Goal l'algoritmo si ferma!
 	*/
-	while ( !((std::abs(goal_robot_coordinates.xCoord() - current_robot_coordinates.xCoord()) <= (dimGrid/2 - 1e-9)) && (std::abs(goal_robot_coordinates.yCoord() - current_robot_coordinates.yCoord()) <= (dimGrid/2 - 1e-9))))
+	while ( !((std::abs(goal_robot_coordinates.xCoord() - current_robot_coordinates.xCoord()) <= (dimGrid/2)) && (std::abs(goal_robot_coordinates.yCoord() - current_robot_coordinates.yCoord()) <= (dimGrid/2))))
 	{
 		Coordinate robot_next_step_move;
 		robot_next_step_move = current_robot_coordinates.path_planning_robot(_eta, _zeta, _max_dist_infl, dimGrid, goal_robot_coordinates, vecobst_pp);
@@ -390,7 +390,7 @@ void Robot::move_robot_to_goal(double _eta, double _zeta, double _max_dist_infl,
 
 	adapt_final_currrobcoords_to_goalcoords(dimGrid, current_robot_coordinates, goal_robot_coordinates);
 
-	cout << "Coordinate del Robot in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
+	cout << "Coordinate del Robot finali in ordine iniziale, attuale e goal: " << '(' << xRinitial << ',' << yRinitial << ')' 
 	<< '(' << xRcurrent << ',' << yRcurrent << ')' << '(' << xRgoal << ',' << yRgoal << ')' << endl;
 
 
