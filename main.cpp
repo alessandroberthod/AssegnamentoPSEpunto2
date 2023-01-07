@@ -1,19 +1,23 @@
 #include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
-#include <thread>
 using std::cout;
 using std::cin;
 using std::endl;
+#include <fstream>
+#include <vector>
 using std::vector;
+#include <string>
 using std::string;
+#include <thread>
+using std::thread;
+
+
+
 #include "Robot.h"
 #include "Obstacle.h"
 #include "Coordinate.h"
 #include "PC.h"
 
-vector<Coordinate> read_from_file(const std::string& filename) {
+vector<Coordinate> read_from_file(const string& filename) {
 
     vector<Coordinate> coords_from_text;
 
@@ -133,7 +137,7 @@ int main()
     vector<Coordinate> goals_coords_from_sat1, goals_coords_from_sat2;
     
     //Salvo le coordinate inviate dal primo dei due satelliti all'interno di un vettore di coordinate
-    std::string filename1{"sample_coordinates_sat1.txt"};
+    string filename1{"sample_coordinates_sat1.txt"};
     goals_coords_from_sat1 = read_from_file(filename1);
 
     for (auto pos = goals_coords_from_sat1.cbegin(); pos !=goals_coords_from_sat1.cend(); ++pos){
@@ -143,7 +147,7 @@ int main()
     }
 
     //Salvo le coordinate inviate dal secondo dei due satelliti all'interno di un vettore di coordinate
-    std::string filename2{"sample_coordinates_sat2.txt"};
+    string filename2{"sample_coordinates_sat2.txt"};
     goals_coords_from_sat2 = read_from_file(filename2);
 
     for (auto pos = goals_coords_from_sat1.cbegin(); pos !=goals_coords_from_sat1.cend(); ++pos){
@@ -158,9 +162,9 @@ int main()
     cout << "Il numero dei dati forniti dai due satelitti e': " << size_of_samples_vec << endl;
 
 
-    std::thread c1(consumer, robot_1, dimG, vobs, size_of_samples_vec);
-    std::thread p1(producer, "sat1", goals_coords_from_sat1);
-    std::thread p2(producer, "sat2", goals_coords_from_sat2);
+    thread c1(consumer, robot_1, dimG, vobs, size_of_samples_vec);
+    thread p1(producer, "sat1", goals_coords_from_sat1);
+    thread p2(producer, "sat2", goals_coords_from_sat2);
 
     c1.join();
     p1.join();

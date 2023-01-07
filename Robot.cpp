@@ -2,15 +2,17 @@
 using std::ostream;
 #include <cmath>
 #include <iostream>
+using std::cout;
+using std::endl;
 #include <algorithm>
+using std::min_element;
 #include <vector>
+using std::vector;
 #include "Robot.h"
 #include "Obstacle.h"
 #include "Coordinate.h"
-using std::cout;
-using std::endl;
-using std::vector;
-using std::min_element;
+
+
 
 
 //Costruttore Robot
