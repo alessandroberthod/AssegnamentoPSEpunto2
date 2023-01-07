@@ -1,11 +1,10 @@
-// PC.h
-
 #ifndef PC_H
 #define PC_H
 
 #include <vector>
 #include <mutex>
 #include <condition_variable>
+
 #include "Coordinate.h"
 
 typedef Coordinate datatype;

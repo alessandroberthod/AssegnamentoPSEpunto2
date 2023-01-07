@@ -8,6 +8,7 @@ using std::endl;
 using std::min_element;
 #include <vector>
 using std::vector;
+
 #include "Robot.h"
 #include "Obstacle.h"
 #include "Coordinate.h"

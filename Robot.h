@@ -2,6 +2,7 @@
 #define ROBOT_H
 
 #include <ostream>
+
 #include "Coordinate.h"
 #include "Obstacle.h"
 

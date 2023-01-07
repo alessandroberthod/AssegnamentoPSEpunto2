@@ -3,19 +3,53 @@ using std::cout;
 using std::cin;
 using std::endl;
 #include <fstream>
+#include <thread>
+using std::thread;
+#include <mutex>
+using std::mutex;
 #include <vector>
 using std::vector;
 #include <string>
 using std::string;
-#include <thread>
-using std::thread;
-
-
 
 #include "Robot.h"
 #include "Obstacle.h"
 #include "Coordinate.h"
 #include "PC.h"
+
+//PC q(10);
+PC q(3);
+
+void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle, int num_samples)
+{
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        Coordinate robot_goal_coords = q.take();
+
+        //Impiego una fz che mi aggiorna il robot alle coordinate goal fornite dai satelliti, imponendo quelle del goal precedente come attuali  
+        robot.update_robot_to_new_sample_goalcoords(robot_goal_coords);    
+        robot.move_robot_to_goal(300.0, 1.0, 5.0, dimofgrid, vobstacle);
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+       
+    }
+    
+
+}
+
+void producer(string sat, vector<Coordinate> sample_coords)
+{
+
+    for (auto pos=sample_coords.cbegin(); pos!=sample_coords.cend(); ++pos)
+    {
+        q.append(*pos); 
+        cout << "Cooordinate x e y prodotte sono: " << (*pos).xCoord() << ',' << (*pos).yCoord() << " dal satellite: " << sat << endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+       
+
+}
 
 vector<Coordinate> read_from_file(const string& filename) {
 
@@ -42,44 +76,6 @@ vector<Coordinate> read_from_file(const string& filename) {
 }
 
 
-//PC q(10);
-PC q(3);
-
-void consumer(Robot robot, double dimofgrid, vector<Obstacle> vobstacle, int num_samples)
-{
-
-    for (int i = 0; i < num_samples; ++i)
-    {
-        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        Coordinate robot_goal_coords = q.take();
-
-        /*robot_goal_x = robot_goal.xCoord();
-        robot_goal_y = robot_goal.yCoord();
-        Robot rob{robot.pos_xRgoal(), robot.pos_yRgoal(), robot.pos_xRgoal(), robot.pos_yRgoal(), robot_goal_x, robot_goal_y};*/
-
-
-        //Impiego una fz che mi aggiorna il robot alle coordinate goal fornite dai satelliti, imponendo quelle del goal precedente come attuali  
-        robot.update_robot_to_new_sample_goalcoords(robot_goal_coords);    
-        robot.move_robot_to_goal(300.0, 1.0, 5.0, dimofgrid, vobstacle);
-        std::this_thread::sleep_for(std::chrono::milliseconds(250));
-       
-    }
-    
-
-}
-
-void producer(string sat, vector<Coordinate> sample_coords)
-{
-
-    for (auto pos=sample_coords.cbegin(); pos!=sample_coords.cend(); ++pos)
-    {
-        q.append(*pos); 
-        cout << "Cooordinate x e y prodotte sono: " << (*pos).xCoord() << ',' << (*pos).yCoord() << " dal satellite: " << sat << endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-       
-
-}
 
 int main()
 {
