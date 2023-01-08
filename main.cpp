@@ -129,7 +129,7 @@ int main()
     string filename2{"sample_coordinates_sat2.txt"};
     goals_coords_from_sat2 = read_from_file(filename2);
 
-    for (auto pos = goals_coords_from_sat1.cbegin(); pos !=goals_coords_from_sat1.cend(); ++pos){
+    for (auto pos = goals_coords_from_sat2.cbegin(); pos !=goals_coords_from_sat2.cend(); ++pos){
 
         cout << '(' << (*pos).xCoord() << ',' << (*pos).yCoord() << ')' << endl;
 
